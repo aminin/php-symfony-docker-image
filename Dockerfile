@@ -1,8 +1,8 @@
-FROM php:cli
+FROM php:7.1-cli
 
 LABEL maintainer="Anton Minin <a.minin@omlook.com>"
 
-# 58.2 is the newest version of ICU jessie can compile
+ENV PHP_CPPFLAGS="$PHP_CPPFLAGS -std=c++11"
 RUN apt-get -y update \
     && apt-get install -y --no-install-recommends \
         ucf libc6 libgd3 libxpm4 libmcrypt4 libfreetype6 libpng12-0 libjpeg62-turbo \
@@ -12,13 +12,13 @@ RUN apt-get -y update \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
         libpng12-dev \
-  && curl -sS -o /tmp/icu.tar.gz -L http://download.icu-project.org/files/icu4c/58.2/icu4c-58_2-src.tgz \
+  && curl -sS -o /tmp/icu.tar.gz -L http://download.icu-project.org/files/icu4c/60.1/icu4c-60_1-src.tgz \
     && tar -zxf /tmp/icu.tar.gz -C /tmp \
     && cd /tmp/icu/source \
-    && ./configure --prefix=/opt/icu58.2 \
+    && ./configure --prefix=/opt/icu60.1 \
     && make \
     && make install \
-    && docker-php-ext-configure intl --with-icu-dir=/opt/icu58.2 \
+    && docker-php-ext-configure intl --with-icu-dir=/opt/icu60.1 \
     && docker-php-ext-install intl \
     && docker-php-ext-enable opcache \
     && docker-php-ext-install -j$(nproc) iconv mcrypt zip pdo_mysql exif \
